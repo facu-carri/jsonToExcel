@@ -37,7 +37,10 @@ function init() {
         }
     }
 
-    dirFiles = fs.readdirSync(cleanDoubleSlash(path + jsonDir))
+    dirFiles = fs.readdirSync(cleanDoubleSlash(path + jsonDir)).sort((a, b) => a.localeCompare(b))
+
+    moveFirst(dirFiles, 'en.json')
+    
     processJsons()
 
     //Agrego todos los textID (key) de cada lenguaje (por si algun lenguaje tiene alguno extra)
@@ -92,12 +95,20 @@ function addRows(data) {
 function processJsons() {
     dirFiles.forEach((file) => {
         const fileContent = readJson(cleanDoubleSlash(path + jsonDir + file))
-        filesContent[getFilename(file)] = fileContent
+        filesContent[getFilename(file)] = fileContent// en (english) = [data]
     })
 }
 
 function readJson(name) {
     return JSON.parse(fs.readFileSync(name, {encoding: 'utf-8'}))
+}
+
+function moveFirst(dir, search) {
+    const index = dir.indexOf(search)
+    if (index > 0) {
+        dir.splice(index, 1)
+        dir.unshift(search)
+    }
 }
 
 init()
